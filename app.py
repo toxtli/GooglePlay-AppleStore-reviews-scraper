@@ -1,19 +1,3 @@
-# from bs4 import BeautifulSoup
-# import requests
-# import argparse
-# import random
-# import pandas
-# import time
-
-# app_id = "com.microsoft.bing"
-# url = "https://play.google.com/store/apps/details?id=" + app_id + "&showAllReviews=true"
-# selector = "h3 + div > div"
-
-# https://play.google.com/_/PlayStoreUi/data/batchexecute?rpcids=UsvDTd&f.sid=2798702096383702157&bl=boq_playuiserver_20190828.06_p0&hl=en&authuser=0&soc-app=121&soc-platform=1&soc-device=1&_reqid=680213&rt=c
-# https://play.google.com/_/PlayStoreUi/data/batchexecute?rpcids=UsvDTd&f.sid=2798702096383702157&bl=boq_playuiserver_20190828.06_p0&hl=en&authuser=0&soc-app=121&soc-platform=1&soc-device=1&_reqid=480213&rt=c
-# 
-# 
-
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
@@ -55,10 +39,10 @@ def getReviews(appID, page=1):
             review = entry.get('content').get('label')	
             vote_count = entry.get('im:voteCount').get('label')
             
-            csvData = [title.encode("utf-8"),  author.encode("utf-8"), version.encode("utf-8"), rating.encode("utf-8"), review.encode("utf-8"), vote_count]
+            csvData = [title,  author, version, rating, review, vote_count]
             writer.writerow(csvData)
         
-        if page<=10:            
+        if page<10:            
             getReviews(appID, page+1)
     
     except Exception as e:
