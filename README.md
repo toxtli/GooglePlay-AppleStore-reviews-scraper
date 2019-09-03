@@ -8,7 +8,7 @@ Install the requirements by running this command:
 
 > pip install -r requirements.txt
 
-You have to had Firefox and Geckodriver installed before running the script.
+You have to install Firefox and Geckodriver before running the script.
 
 ### For Google Play
 
