@@ -49,7 +49,7 @@ def getReviews(appID, page=1):
         print(e)
         time.sleep(1)
 
-def extract_play(company):
+def extract_play(company, output):
 	driver = webdriver.Firefox()
 	url = "https://play.google.com/store/apps/details?id=" + company + "&showAllReviews=true"
 	driver.get(url)
@@ -65,7 +65,11 @@ def extract_play(company):
 		for elem in elems[num_it:]:
 			record = {}
 			spans = elem.find_elements_by_css_selector('span')
-			comment_index = 12 if spans[12].text else 13
+			try:
+				comment = spans[12].text
+			except:
+				comment = ''
+			comment_index = 12 if comment else 13
 			comment_obj = spans[comment_index]
 			buttons = comment_obj.find_elements_by_css_selector('div > button')
 			if len(buttons) > 0:
@@ -81,7 +85,9 @@ def extract_play(company):
 			records.append(record)
 		driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 		df = pandas.DataFrame(records)
-		df.to_csv(company + '.csv')
+		if output == '':
+			output = company + '.csv'
+		df.to_csv(output, encoding='utf-8')
 		time.sleep(1)
 		elems = driver.find_elements_by_css_selector(selector)
 		num_elems = len(elems)
@@ -95,18 +101,25 @@ def extract_play(company):
 	driver.close()
 
 parser = argparse.ArgumentParser(description='This script extract reviews from apps.')
-parser.add_argument('--site', default='google', help="The website from where the reviews are extracted.")
-parser.add_argument('--companies', default='com.microsoft.bing', help="The companies to extract information.")
+parser.add_argument('-s', '--site', default='google', help="The website from where the reviews are extracted.")
+parser.add_argument('-c', '--companies', default='com.microsoft.bing', help="The companies to extract information.")
+parser.add_argument('-o', '--output', default='', help="The output filename.")
 #345323231
 args = parser.parse_args()
 
 site = args.site
+output = args.output
 companies = args.companies
+outputs = args.output.split(',')
 if site == 'apple':
 	csvTitles = ['title',  'author', 'version', 'rating', 'review', 'vote_count']
 	companies = args.companies.split(',')
-	for company in companies:
-		myFile = open(company + '.csv',"w")
+	for i,company in enumerate(companies):
+		if output == '':
+			filename = company + '.csv'
+		else:
+			filename = outputs[i]
+		myFile = open(output, "w")
 		with myFile:
 		    writer = csv.writer(myFile)
 		    writer.writerow(csvTitles)    
@@ -114,5 +127,9 @@ if site == 'apple':
 		    myFile.close()
 elif site == 'google':
 	companies = args.companies.split(',')
-	for company in companies:
-		extract_play(company)
+	for i,company in enumerate(companies):
+		if output == '':
+			filename = output
+		else:
+			filename = outputs[i]
+		extract_play(company, filename)
