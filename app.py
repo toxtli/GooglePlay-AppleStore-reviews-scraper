@@ -61,7 +61,8 @@ def extract_play(company, headers, max_results=None, headless=False, phantom=Fal
 		cap["marionette"] = False
 		if headless:
 			options.add_argument('-headless')
-		driver = webdriver.Firefox(firefox_options=options, capabilities=cap)
+		#driver = webdriver.Firefox(firefox_options=options, capabilities=cap)
+		driver = webdriver.Firefox(firefox_options=options)
 	url = "https://play.google.com/store/apps/details?id=" + company + "&showAllReviews=true"
 	driver.get(url)
 	selector = "h3 + div > div"
