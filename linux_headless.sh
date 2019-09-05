@@ -1,5 +1,6 @@
 #install Xvfb
 sudo apt-get install firefox-esr
+sudo apt-get install firefox
 sudo apt-get install xvfb
 
 #set display number to :99
