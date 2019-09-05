@@ -102,7 +102,6 @@ def extract_play(company, headers, max_results=None, headless=False, phantom=Fal
 				comment_obj = spans[12]
 			buttons = comment_obj.find_elements_by_css_selector('div > button')
 			if len(buttons) > 0:
-				clickElement()
 				click_element(driver, buttons[0])
 				time.sleep(0.1)
 				spans = elem.find_elements_by_css_selector('span')
