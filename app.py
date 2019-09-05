@@ -50,8 +50,14 @@ def getReviews(appID, page=1):
         print(e)
         time.sleep(1)
 
-def extract_play(company, headers, max_results=None, headless=False, phantom=False):
-	if phantom:
+def extract_play(company, headers, max_results=None, headless=False, phantom=False, gchrome=False):
+	if gchrome:
+		chrome_options = webdriver.ChromeOptions()
+		chrome_options.add_argument('--headless')
+		chrome_options.add_argument('--no-sandbox')
+		chrome_options.add_argument('--disable-dev-shm-usage')
+		driver = webdriver.Chrome('chromedriver', options=chrome_options)
+	elif phantom:
 		driver = webdriver.PhantomJS()
 		driver.set_window_size(1120, 550)
 	else:
@@ -125,6 +131,7 @@ parser.add_argument('-o', '--output', default='', help="The output filename.")
 parser.add_argument('-n', '--number', default=None, type=int, help="The number of results.")
 parser.add_argument('-q', '--quiet', action='store_true', help="Enables the headless mode.")
 parser.add_argument('-p', '--phantom', action='store_true', help="Use PhantomJS.")
+parser.add_argument('-g', '--gchrome', action='store_true', help="Use Google Chrome.")
 #345323231
 args = parser.parse_args()
 
@@ -158,7 +165,7 @@ elif site == 'google':
 		with myFile:
 		    writer = csv.writer(myFile)
 		    writer.writerow(csvTitles)    
-		    extract_play(company, csvTitles, args.number, args.quiet, args.phantom)
+		    extract_play(company, csvTitles, args.number, args.quiet, args.phantom, args.gchrome)
 		    myFile.close()
 			
 print("--- %s seconds ---" % (time.time() - start_time))
