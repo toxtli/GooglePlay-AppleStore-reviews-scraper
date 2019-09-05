@@ -53,9 +53,10 @@ def getReviews(appID, page=1):
 def extract_play(company, headers, max_results=None, headless=False, phantom=False, gchrome=False):
 	if gchrome:
 		chrome_options = webdriver.ChromeOptions()
-		chrome_options.add_argument('--headless')
-		chrome_options.add_argument('--no-sandbox')
-		chrome_options.add_argument('--disable-dev-shm-usage')
+		if headless:	
+			chrome_options.add_argument('--headless')
+			chrome_options.add_argument('--no-sandbox')
+			chrome_options.add_argument('--disable-dev-shm-usage')
 		driver = webdriver.Chrome('chromedriver', options=chrome_options)
 	elif phantom:
 		driver = webdriver.PhantomJS()
