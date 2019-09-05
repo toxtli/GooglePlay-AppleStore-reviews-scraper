@@ -1,4 +1,5 @@
 #install Xvfb
+sudo apt-get update
 sudo apt-get install firefox-esr
 sudo apt-get install firefox
 sudo apt-get install xvfb
