@@ -104,7 +104,7 @@ def extract_play(company, headers, max_results=None, headless=False, phantom=Fal
 			row = []
 			for header in headers:
 				row.append(record[header])
-			writer.writerow([unicode(s).encode("utf-8") for s in row])
+			writer.writerow([str(s).encode("utf-8") for s in row])
 			#records.append(record)
 			saved += 1
 		#df = pandas.DataFrame(records)
