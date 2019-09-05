@@ -14,6 +14,9 @@ import time
 import pandas
 import argparse
 
+if sys.version_info[0] >= 3:
+    unicode = str
+
 def getJson(url):
     response = urlopen(url)
     data = str(response.read().decode('UTF-8'))
