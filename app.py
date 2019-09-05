@@ -87,6 +87,9 @@ def extract_play(company, output, max_results=None, headless=False):
 			record["review"] = comment_obj.text
 			stars = elem.find_element_by_css_selector('div[aria-label][role="img"]')
 			record["stars"] = stars.get_attribute("aria-label")
+			record["likes"] = elem.find_element_by_css_selector('div[aria-label="Number of times this review was rated helpful"]').text
+			siblings = comment_obj.find_elements_by_xpath('../../*')
+			record['reply'] = siblings[2].text if len(siblings) > 2 else ''
 			records.append(record)
 			saved += 1
 		df = pandas.DataFrame(records)
@@ -108,6 +111,7 @@ def extract_play(company, output, max_results=None, headless=False):
 				num_elems = len(elems)
 	driver.close()
 
+start_time = time.time()
 parser = argparse.ArgumentParser(description='This script extract reviews from apps.')
 parser.add_argument('-s', '--site', default='google', help="The website from where the reviews are extracted.")
 parser.add_argument('-c', '--companies', default='com.microsoft.bing', help="The companies to extract information.")
@@ -143,3 +147,4 @@ elif site == 'google':
 		else:
 			filename = outputs[i]
 		extract_play(company, filename, args.number, args.quiet)
+print("--- %s seconds ---" % (time.time() - start_time))
