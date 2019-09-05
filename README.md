@@ -6,7 +6,7 @@ Open the repository notebook by clicking the following link and then Run All.
 
 https://colab.research.google.com/github/toxtli/GooglePlay-AppleStore-reviews-scraper/blob/master/notebook.ipynb
 
-## How to run it local
+## How to run it locally
 
 ### Instructions
 
