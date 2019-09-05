@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 try:
 	from urllib.request import urlopen
@@ -56,9 +57,11 @@ def extract_play(company, headers, max_results=None, headless=False, phantom=Fal
 		driver.set_window_size(1120, 550)
 	else:
 		options = webdriver.FirefoxOptions()
+		cap = DesiredCapabilities().FIREFOX
+		cap["marionette"] = False
 		if headless:
 			options.add_argument('-headless')
-		driver = webdriver.Firefox(firefox_options=options)
+		driver = webdriver.Firefox(firefox_options=options, capabilities=cap)
 	url = "https://play.google.com/store/apps/details?id=" + company + "&showAllReviews=true"
 	driver.get(url)
 	selector = "h3 + div > div"
