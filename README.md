@@ -14,7 +14,13 @@ You have to install Firefox and Geckodriver before running the script.
 
 The company ID is the is the one that starts with com.* in the Google Play URL.
 
+For browser mode
+
 > python app.py --site google --companies com.facebook.katana
+
+For headless mode, limit of results, and output filename
+
+> python app.py --site google --companies com.facebook.katana --number 200 --output facebook_200.csv --quiet
 
 ### For the App Store
 

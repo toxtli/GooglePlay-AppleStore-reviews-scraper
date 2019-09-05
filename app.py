@@ -1,5 +1,6 @@
+#!/usr/bin/python
+
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 
 try:
 	from urllib.request import urlopen
@@ -49,13 +50,17 @@ def getReviews(appID, page=1):
         print(e)
         time.sleep(1)
 
-def extract_play(company, output):
-	driver = webdriver.Firefox()
+def extract_play(company, output, max_results=None, headless=False):
+	options = webdriver.FirefoxOptions()
+	if headless:
+		options.add_argument('-headless')
+	driver = webdriver.Firefox(firefox_options=options)
 	url = "https://play.google.com/store/apps/details?id=" + company + "&showAllReviews=true"
 	driver.get(url)
 	selector = "h3 + div > div"
 	records = []
 	last_elems = 0
+	saved = 0
 	elems = driver.find_elements_by_css_selector(selector)
 	num_elems = len(elems)
 	while num_elems > last_elems:
@@ -83,11 +88,14 @@ def extract_play(company, output):
 			stars = elem.find_element_by_css_selector('div[aria-label][role="img"]')
 			record["stars"] = stars.get_attribute("aria-label")
 			records.append(record)
-		driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+			saved += 1
 		df = pandas.DataFrame(records)
 		if output == '':
 			output = company + '.csv'
 		df.to_csv(output, encoding='utf-8')
+		if max_results is not None and saved >= max_results:
+			break
+		driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 		time.sleep(1)
 		elems = driver.find_elements_by_css_selector(selector)
 		num_elems = len(elems)
@@ -104,6 +112,8 @@ parser = argparse.ArgumentParser(description='This script extract reviews from a
 parser.add_argument('-s', '--site', default='google', help="The website from where the reviews are extracted.")
 parser.add_argument('-c', '--companies', default='com.microsoft.bing', help="The companies to extract information.")
 parser.add_argument('-o', '--output', default='', help="The output filename.")
+parser.add_argument('-n', '--number', default=None, type=int, help="The number of results.")
+parser.add_argument('-q', '--quiet', action='store_true', help="Enables the headless mode.")
 #345323231
 args = parser.parse_args()
 
@@ -132,4 +142,4 @@ elif site == 'google':
 			filename = output
 		else:
 			filename = outputs[i]
-		extract_play(company, filename)
+		extract_play(company, filename, args.number, args.quiet)
