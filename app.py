@@ -96,10 +96,11 @@ def extract_play(company, headers, max_results=None, headless=False, phantom=Fal
 			except:
 				comment = ''
 			comment_index = 12 if comment else 13
-			if len(spans) > comment_index:
+			if spans is not None and len(spans) > comment_index:
 				comment_obj = spans[comment_index]
+				comment = spans[comment_index].text
 			else:
-				comment_obj = spans[12]
+				comment_obj = None
 			buttons = comment_obj.find_elements_by_css_selector('div > button')
 			if len(buttons) > 0:
 				click_element(driver, buttons[0])
@@ -108,12 +109,15 @@ def extract_play(company, headers, max_results=None, headless=False, phantom=Fal
 				comment_obj = spans[comment_index + 1]
 			record["author"] = spans[0].text
 			record["date"] = spans[2].text
-			record["review"] = comment_obj.text
+			record["review"] = comment
 			stars = elem.find_element_by_css_selector('div[aria-label][role="img"]')
 			record["rating"] = stars.get_attribute("aria-label")
 			record["vote_count"] = elem.find_element_by_css_selector('div[aria-label="Number of times this review was rated helpful"]').text
-			siblings = comment_obj.find_elements_by_xpath('../../*')
-			record['reply'] = siblings[2].text if len(siblings) > 2 else ''
+			if comment_obj is not None:
+				siblings = comment_obj.find_elements_by_xpath('../../*')
+				record['reply'] = siblings[2].text if len(siblings) > 2 else ''
+			else:
+				record['reply'] = ''
 			row = []
 			for header in headers:
 				row.append(record[header])
