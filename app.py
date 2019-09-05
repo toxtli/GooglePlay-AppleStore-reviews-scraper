@@ -53,6 +53,13 @@ def getReviews(appID, page=1):
         print(e)
         time.sleep(1)
 
+def click_element(driver, element):
+	try:
+		element.click()
+	except:
+		driver.execute_script("arguments[0].click();", element)
+		#webdriver.ActionChains(driver).move_to_element(element).click(element).perform()
+	
 def extract_play(company, headers, max_results=None, headless=False, phantom=False, gchrome=False):
 	if gchrome:
 		chrome_options = webdriver.ChromeOptions()
@@ -95,7 +102,8 @@ def extract_play(company, headers, max_results=None, headless=False, phantom=Fal
 				comment_obj = spans[12]
 			buttons = comment_obj.find_elements_by_css_selector('div > button')
 			if len(buttons) > 0:
-				buttons[0].click()
+				clickElement()
+				click_element(driver, buttons[0])
 				time.sleep(0.1)
 				spans = elem.find_elements_by_css_selector('span')
 				comment_obj = spans[comment_index + 1]
@@ -124,7 +132,7 @@ def extract_play(company, headers, max_results=None, headless=False, phantom=Fal
 		if num_elems == last_elems:
 			buttons = driver.find_elements_by_css_selector('h3 + div + div > div[role="button"]')
 			if len(buttons) > 0:
-				buttons[0].click()
+				click_element(driver, buttons[0])
 				time.sleep(1)
 				elems = driver.find_elements_by_css_selector(selector)
 				num_elems = len(elems)
