@@ -50,11 +50,15 @@ def getReviews(appID, page=1):
         print(e)
         time.sleep(1)
 
-def extract_play(company, output, max_results=None, headless=False):
-	options = webdriver.FirefoxOptions()
-	if headless:
-		options.add_argument('-headless')
-	driver = webdriver.Firefox(firefox_options=options)
+def extract_play(company, headers, max_results=None, headless=False, phantom=False):
+	if phantom:
+		driver = webdriver.PhantomJS()
+		driver.set_window_size(1120, 550)
+	else:
+		options = webdriver.FirefoxOptions()
+		if headless:
+			options.add_argument('-headless')
+		driver = webdriver.Firefox(firefox_options=options)
 	url = "https://play.google.com/store/apps/details?id=" + company + "&showAllReviews=true"
 	driver.get(url)
 	selector = "h3 + div > div"
@@ -86,16 +90,18 @@ def extract_play(company, output, max_results=None, headless=False):
 			record["date"] = spans[2].text
 			record["review"] = comment_obj.text
 			stars = elem.find_element_by_css_selector('div[aria-label][role="img"]')
-			record["stars"] = stars.get_attribute("aria-label")
-			record["likes"] = elem.find_element_by_css_selector('div[aria-label="Number of times this review was rated helpful"]').text
+			record["rating"] = stars.get_attribute("aria-label")
+			record["vote_count"] = elem.find_element_by_css_selector('div[aria-label="Number of times this review was rated helpful"]').text
 			siblings = comment_obj.find_elements_by_xpath('../../*')
 			record['reply'] = siblings[2].text if len(siblings) > 2 else ''
-			records.append(record)
+			row = []
+			for header in headers:
+				row.append(record[header])
+			writer.writerow(row)
+			#records.append(record)
 			saved += 1
-		df = pandas.DataFrame(records)
-		if output == '':
-			output = company + '.csv'
-		df.to_csv(output, encoding='utf-8')
+		#df = pandas.DataFrame(records)
+		#df.to_csv(output, encoding='utf-8')
 		if max_results is not None and saved >= max_results:
 			break
 		driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -118,6 +124,7 @@ parser.add_argument('-c', '--companies', default='com.microsoft.bing', help="The
 parser.add_argument('-o', '--output', default='', help="The output filename.")
 parser.add_argument('-n', '--number', default=None, type=int, help="The number of results.")
 parser.add_argument('-q', '--quiet', action='store_true', help="Enables the headless mode.")
+parser.add_argument('-p', '--phantom', action='store_true', help="Use PhantomJS.")
 #345323231
 args = parser.parse_args()
 
@@ -126,7 +133,7 @@ output = args.output
 companies = args.companies
 outputs = args.output.split(',')
 if site == 'apple':
-	csvTitles = ['title',  'author', 'version', 'rating', 'review', 'vote_count']
+	csvTitles = ['author', 'review', 'rating', 'vote_count', 'version', 'title',]
 	companies = args.companies.split(',')
 	for i,company in enumerate(companies):
 		if output == '':
@@ -140,11 +147,18 @@ if site == 'apple':
 		    getReviews(company)
 		    myFile.close()
 elif site == 'google':
+	csvTitles = ['author', 'review', 'rating', 'vote_count', 'date',  'reply']
 	companies = args.companies.split(',')
 	for i,company in enumerate(companies):
 		if output == '':
-			filename = output
+			filename = company + '.csv'
 		else:
-			filename = outputs[i]
-		extract_play(company, filename, args.number, args.quiet)
+			filename = outputs[i]			
+		myFile = open(filename, "w")
+		with myFile:
+		    writer = csv.writer(myFile)
+		    writer.writerow(csvTitles)    
+		    extract_play(company, csvTitles, args.number, args.quiet, args.phantom)
+		    myFile.close()
+			
 print("--- %s seconds ---" % (time.time() - start_time))
