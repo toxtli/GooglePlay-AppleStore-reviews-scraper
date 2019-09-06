@@ -96,20 +96,20 @@ def extract_play(company, headers, max_results=None, headless=False, phantom=Fal
 			except:
 				comment = ''
 			comment_index = 12 if comment else 13
-			if spans is not None and len(spans) > comment_index:
+			if not (spans is not None and len(spans) > comment_index):
+				comment_obj = None
+			else:
 				comment_obj = spans[comment_index]
 				try:
 					comment = spans[comment_index].text
 				except:
 					comment = ''
-			else:
-				comment_obj = None
-			buttons = comment_obj.find_elements_by_css_selector('div > button')
-			if len(buttons) > 0:
-				click_element(driver, buttons[0])
-				time.sleep(0.1)
-				spans = elem.find_elements_by_css_selector('span')
-				comment_obj = spans[comment_index + 1]
+				buttons = comment_obj.find_elements_by_css_selector('div > button')
+				if len(buttons) > 0:
+					click_element(driver, buttons[0])
+					time.sleep(0.1)
+					spans = elem.find_elements_by_css_selector('span')
+					comment_obj = spans[comment_index + 1]
 			record["author"] = spans[0].text
 			record["date"] = spans[2].text
 			record["review"] = comment
