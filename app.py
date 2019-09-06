@@ -113,9 +113,15 @@ def extract_play(company, headers, max_results=None, headless=False, phantom=Fal
 			record["author"] = spans[0].text
 			record["date"] = spans[2].text
 			record["review"] = comment
-			stars = elem.find_element_by_css_selector('div[aria-label][role="img"]')
-			record["rating"] = stars.get_attribute("aria-label")
-			record["vote_count"] = elem.find_element_by_css_selector('div[aria-label="Number of times this review was rated helpful"]').text
+			try:
+				stars = elem.find_element_by_css_selector('div[aria-label][role="img"]')
+				record["rating"] = stars.get_attribute("aria-label")
+			except:
+				record["rating"] = ''
+			try:
+				record["vote_count"] = elem.find_element_by_css_selector('div[aria-label="Number of times this review was rated helpful"]').text
+			except:
+				record["vote_count"] = ''
 			if comment_obj is not None:
 				siblings = comment_obj.find_elements_by_xpath('../../*')
 				record['reply'] = siblings[2].text if len(siblings) > 2 else ''
