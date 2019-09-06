@@ -98,7 +98,10 @@ def extract_play(company, headers, max_results=None, headless=False, phantom=Fal
 			comment_index = 12 if comment else 13
 			if spans is not None and len(spans) > comment_index:
 				comment_obj = spans[comment_index]
-				comment = spans[comment_index].text
+				try:
+					comment = spans[comment_index].text
+				except:
+					comment = ''
 			else:
 				comment_obj = None
 			buttons = comment_obj.find_elements_by_css_selector('div > button')
