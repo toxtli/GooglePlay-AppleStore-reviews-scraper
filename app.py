@@ -142,12 +142,17 @@ def extract_play(company, headers, max_results=None, headless=False, phantom=Fal
 		elems = driver.find_elements_by_css_selector(selector)
 		num_elems = len(elems)
 		if num_elems == last_elems:
-			buttons = driver.find_elements_by_css_selector('h3 + div + div > div[role="button"]')
-			if len(buttons) > 0:
-				click_element(driver, buttons[0])
-				time.sleep(1)
-				elems = driver.find_elements_by_css_selector(selector)
-				num_elems = len(elems)
+			driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+			time.sleep(time_sleep)
+			elems = driver.find_elements_by_css_selector(selector)
+			num_elems = len(elems)
+			if num_elems == last_elems:
+				buttons = driver.find_elements_by_css_selector('h3 + div + div > div[role="button"]')
+				if len(buttons) > 0:
+					click_element(driver, buttons[0])
+					time.sleep(1)
+					elems = driver.find_elements_by_css_selector(selector)
+					num_elems = len(elems)
 	driver.close()
 
 start_time = time.time()
