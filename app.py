@@ -60,7 +60,7 @@ def click_element(driver, element):
 		driver.execute_script("arguments[0].click();", element)
 		#webdriver.ActionChains(driver).move_to_element(element).click(element).perform()
 	
-def extract_play(company, headers, max_results=None, headless=False, phantom=False, gchrome=False):
+def extract_play(company, headers, max_results=None, headless=False, phantom=False, gchrome=False, time_sleep=1):
 	if gchrome:
 		chrome_options = webdriver.ChromeOptions()
 		if headless:	
@@ -138,7 +138,7 @@ def extract_play(company, headers, max_results=None, headless=False, phantom=Fal
 		if max_results is not None and saved >= max_results:
 			break
 		driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-		time.sleep(1)
+		time.sleep(time_sleep)
 		elems = driver.find_elements_by_css_selector(selector)
 		num_elems = len(elems)
 		if num_elems == last_elems:
@@ -159,12 +159,14 @@ parser.add_argument('-n', '--number', default=None, type=int, help="The number o
 parser.add_argument('-q', '--quiet', action='store_true', help="Enables the headless mode.")
 parser.add_argument('-p', '--phantom', action='store_true', help="Use PhantomJS.")
 parser.add_argument('-g', '--gchrome', action='store_true', help="Use Google Chrome.")
+parser.add_argument('-t', '--timeout', default=1, help="Time to sleep after scrolling down.")
 #345323231
 args = parser.parse_args()
 
 site = args.site
 output = args.output
 companies = args.companies
+time_sleep = timeout.timeout
 outputs = args.output.split(',')
 if site == 'apple':
 	csvTitles = ['author', 'review', 'rating', 'vote_count', 'version', 'title',]
@@ -192,7 +194,7 @@ elif site == 'google':
 		with myFile:
 		    writer = csv.writer(myFile)
 		    writer.writerow(csvTitles)    
-		    extract_play(company, csvTitles, args.number, args.quiet, args.phantom, args.gchrome)
+		    extract_play(company, csvTitles, args.number, args.quiet, args.phantom, args.gchrome, time_sleep)
 		    myFile.close()
 			
 print("--- %s seconds ---" % (time.time() - start_time))
