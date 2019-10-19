@@ -166,7 +166,7 @@ args = parser.parse_args()
 site = args.site
 output = args.output
 companies = args.companies
-time_sleep = timeout.timeout
+time_sleep = args.timeout
 outputs = args.output.split(',')
 if site == 'apple':
 	csvTitles = ['author', 'review', 'rating', 'vote_count', 'version', 'title',]
