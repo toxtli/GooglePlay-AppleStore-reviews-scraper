@@ -159,7 +159,7 @@ parser.add_argument('-n', '--number', default=None, type=int, help="The number o
 parser.add_argument('-q', '--quiet', action='store_true', help="Enables the headless mode.")
 parser.add_argument('-p', '--phantom', action='store_true', help="Use PhantomJS.")
 parser.add_argument('-g', '--gchrome', action='store_true', help="Use Google Chrome.")
-parser.add_argument('-t', '--timeout', default=1, help="Time to sleep after scrolling down.")
+parser.add_argument('-t', '--timeout', default=1, type=int, help="Time to sleep after scrolling down.")
 #345323231
 args = parser.parse_args()
 
